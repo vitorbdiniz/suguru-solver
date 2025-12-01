@@ -1,6 +1,5 @@
 import time
 from puzzles import load_puzzles
-from solver import LevelEngine
 from solver_regiao import LevelEngineRegions
 from motor_deterministico import DeterministicSolver
 
@@ -20,7 +19,7 @@ def is_solved(board):
     return None not in board
 
 
-def solve_suguru_textmode(puzzle, setup='8x8', use_backtracking=True, backtracking_method='celula'):
+def solve_suguru_textmode(puzzle, setup='8x8'):
     """
     Resolve um puzzle Suguru em modo texto, sem interface gráfica.
     Usa o motor determinístico e, opcionalmente, o solver com backtracking (LevelEngine).
@@ -32,10 +31,7 @@ def solve_suguru_textmode(puzzle, setup='8x8', use_backtracking=True, backtracki
     givens = puzzle['givens']
 
     # inicia o motor de níveis (backtracking controlado)
-    if backtracking_method == 'celula':
-        engine = LevelEngine(width, height, layout, givens)
-    else:
-        engine = LevelEngineRegions(width, height, layout, givens)
+    engine = LevelEngineRegions(width, height, layout, givens)
 
     start_time = time.perf_counter()
 
@@ -91,7 +87,7 @@ def solve_all_sugurus(limit=None, backtracking_method='regiao'):
             print(f'{setup} - {i}')
             try:
                 puzzle = puzzles[i]
-                res = solve_suguru_textmode(puzzle, setup=setup, use_backtracking=True, backtracking_method=backtracking_method)
+                res = solve_suguru_textmode(puzzle, setup=setup)
                 if results is None:
                     results = pd.DataFrame(columns=res.index)
                 results.loc[f'{setup}_{puzzle["name"]}'] = res
@@ -103,5 +99,5 @@ def solve_all_sugurus(limit=None, backtracking_method='regiao'):
             results.to_csv(f'./results/backtracking_{backtracking_method}.csv')
 
 if __name__ == "__main__":
-    limit=50
+    limit=None
     solve_all_sugurus(limit, backtracking_method='region')
